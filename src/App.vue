@@ -16,9 +16,9 @@
 
 <script setup>
 import { storeToRefs } from 'pinia'
-import { useBackgroundStore } from '@/stores/background.store.js'
+import { useGeneralStore } from '@/stores/general.store.js'
 
-const { background } = storeToRefs(useBackgroundStore())
+const { background } = storeToRefs(useGeneralStore())
 
 const isFIleAVideo = (file) => {
   if (file?.split('.')?.[1] === 'mp4') {

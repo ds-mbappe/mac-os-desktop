@@ -126,7 +126,7 @@ import DsmText from '../DsmText.vue';
 import DsmTitle from '../DsmTitle.vue';
 import { storeToRefs } from 'pinia';
 import { useTheme } from 'vuetify';
-import { useBackgroundStore } from '../../stores/background.store.js'
+import { useGeneralStore } from '../../stores/general.store.js'
 import original1 from '../../assets/wallpapers/Appearance_Light-min.png';
 import original2 from '../../assets/wallpapers/M2MacBookProMac-min.png';
 import original3 from '../../assets/wallpapers/ventura.jpg';
@@ -146,7 +146,7 @@ import cliff from '../../assets/wallpapers/cliff.mp4';
 import sandhand from '../../assets/wallpapers/sandhand.mp4';
 import seoul from '../../assets/wallpapers/seoul.mp4';
 
-const { background } = storeToRefs(useBackgroundStore())
+const { background } = storeToRefs(useGeneralStore())
 
 const theme = useTheme().name
 

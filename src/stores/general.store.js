@@ -1,9 +1,16 @@
 import { defineStore } from 'pinia'
 import sonoma from '../assets/sonoma.jpg'
 
-export const useBackgroundStore = defineStore('background', {
+export const useGeneralStore = defineStore('general', {
   state: () => ({
     background: sonoma,
+    folders: [
+      {
+        id: 1,
+        title: 'Empty folder',
+        selected: false,
+      }
+    ],
   }),
   actions: {
     changeBackground(url) {
