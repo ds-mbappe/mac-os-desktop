@@ -4,7 +4,7 @@
     <top-bar />
 
     <!-- Content -->
-    <div class="w-full h-full flex-col">
+    <div class="w-full h-full flex-col block relative">
 
       <!-- <p>
         Home
