@@ -7,11 +7,11 @@
       </div>
     </template>
 
-    <div class="w-fit max-w-[800px] h-fit max-h-[650px] flex !rounded-xl"
+    <div id="customDialog" class="w-fit max-w-[800px] h-fit max-h-[650px] !rounded-xl hidden"
       :class="theme === 'customLightTheme' ? 'bg-white/90' : 'bg-neutral-900/90'">
       <!-- Left Side -->
       <div class="!w-[250px] flex flex-col border-r border-r-gray-300 overflow-y-auto">
-        <div class="flex items-center gap-2 px-3 pt-4 pb-5">
+        <div id="header" class="flex items-center gap-2 px-3 pt-4 pb-5">
           <v-hover>
             <template #default="{ isHovering, props }">
               <div v-bind="props" class="flex items-center w-3 h-3 rounded-full bg-red-500" @click="dialog = false">
@@ -51,7 +51,7 @@
       <!-- Right Side -->
       <div class="flex flex-col flex-1 overflow-hidden">
         <!-- Header With Menu name -->
-        <div class="flex items-center pl-2 pt-2 pb-3 gap-3">
+        <div id="header" class="flex items-center pl-2 pt-2 pb-3 gap-3">
           <div class="flex items-center gap-2">
             <div>
               <Icon icon="mdi:chevron-left" height="30" width="30"
@@ -103,7 +103,7 @@
                     'background-size': 'cover'
                   }" @click="setBackground(image)" />
 
-                <div v-else class="rounded bg-middle-grey w-[125px] h-[75px] overflow-hidden relative"
+                <div v-else class="rounded bg-middle-grey w-[125px] h-[75px] overflow-hidden relative bg-center"
                   :class="background === image ? 'border-2 border-context-blue' : 'border-black/25'"
                   @click="setBackground(image)">
                   <video :src="image" autoplay loop muted class="absolute z-0 w-[125px] h-full" />
@@ -149,7 +149,7 @@ const { background } = storeToRefs(useBackgroundStore())
 
 const theme = useTheme().name
 
-const dialog = ref(false)
+const dialog = ref(true)
 const items = ref([
   {
     elements: [

@@ -85,7 +85,63 @@ import DialogSettings from './dialogs/DialogSettings.vue';
 const theme = useTheme().name
 
 const closeContextMenu = () => {
+  document.getElementById("customDialog").classList.remove('hidden')
+  console.log(document.getElementById("customDialog").classList)
+  // dragElement(document.getElementById("customDialog"))
+
   document.getElementById("contextMenu").style.display = 'none'
+}
+
+function dragElement(element) {
+  console.log('element')
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+  if (document.getElementById(element?.id + "header")) {
+    document.getElementById(element?.id + "header").onmousedown = dragMouseDown;
+  }
+  else {
+    element.onmousedown = dragMouseDown;
+  }
+
+  function dragMouseDown(e) {
+    e = e || window.event
+    e.preventDefault();
+
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+
+    document.onmouseup = closeDragElement
+    document.onmousedown = elementDrag
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault()
+
+    var winW = document.documentElement.clientWidth || document.body.clientWidth
+    var winH = document.documentElement.clientHeight || document.body.clientHeight
+
+    maxX = winW - element.offsetWidth - 1
+    maxY = winH - element.offsetHeight - 1
+
+    pos1 = pos3 - e.clientX
+    pos2 = pos4 - e.clientY
+    pos3 = e.clientX
+    pos4 = e.clientY
+
+    if (element.offsetTop - pos2 <= maxY && element.offsetTop - pos2 >= 0) {
+      element.style.top = ekelent.offsetTop - pos2 + "px"
+    }
+
+    if (element.offsetLeft - pos1 <= maxX && element.offsetLeft - pos1 >= 0) {
+      element.style.left = ekelent.offsetLeft - pos1 + "px"
+    }
+  }
+
+  function closeDragElement() {
+    document.onmouseup = null
+    document.onmousemove = null
+  }
 }
 </script>
 
