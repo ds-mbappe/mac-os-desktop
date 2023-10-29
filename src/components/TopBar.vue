@@ -38,7 +38,7 @@
 
       <!-- Date -->
       <dsm-text base medium color="white" class="hover:bg-black/10 px-3 py-1.5">
-        {{ moment().format("dddd MMM d HH:mm A") }}
+        {{ moment().format("dddd MMM D HH:mm A") }}
       </dsm-text>
     </div>
   </div>
