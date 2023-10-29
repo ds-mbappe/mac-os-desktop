@@ -70,12 +70,14 @@
         </div>
 
         <!-- Actual Wallpaper -->
-        <div class="flex items-start px-4 gap-3">
-          <div class="w-[150px] h-[100px] overflow-hidden rounded border border-black/25">
-            <img :src="background" width="150" height="75" />
+        <div class="flex flex-col items-center px-4 gap-3">
+          <div class="w-[250px] overflow-hidden rounded border border-black/25">
+            <img v-if="!isFIleAVideo(background)" :src="background" class="w-full h-[125px]" />
+
+            <video v-else :src="background" autoplay loop muted class="w-full h-full" />
           </div>
 
-          <div class="flex-1 rounded border border-gray-300 p-2">
+          <div class="w-full flex-1 rounded border border-gray-300 p-2">
             <dsm-text sm medium class="capitalize">
               {{ background?.split('.')?.[0]?.split('/')?.[background?.split('.')?.[0]?.split('/')?.length - 1] }}
             </dsm-text>
@@ -93,12 +95,21 @@
             </dsm-text>
 
             <div class="w-fit flex gap-2 pr-3 overflow-x-hidden">
-              <div v-for="image in category?.images" :key="image"
-                class="rounded bg-middle-grey w-[125px] h-[75px] overflow-hidden relative bg-contain bg-center"
-                :class="background === image ? 'border-2 border-context-blue' : 'border-black/25'" :style="{
-                  'background-image': image ? `url('${image}')` : '',
-                  'background-size': 'cover'
-                }" @click="setBackground(image)" />
+              <div v-for="image in category?.images" :key="image">
+                <div v-if="!isFIleAVideo(image)"
+                  class="rounded bg-middle-grey w-[125px] h-[75px] overflow-hidden relative bg-contain bg-center"
+                  :class="background === image ? 'border-2 border-context-blue' : 'border-black/25'" :style="{
+                    'background-image': image ? `url('${image}')` : '',
+                    'background-size': 'cover'
+                  }" @click="setBackground(image)" />
+
+                <div v-else class="rounded bg-middle-grey w-[125px] h-[75px] overflow-hidden relative"
+                  :class="background === image ? 'border-2 border-context-blue' : 'border-black/25'"
+                  @click="setBackground(image)">
+                  <video :src="image" autoplay loop muted class="absolute z-0 w-[125px] h-full" />
+                </div>
+
+              </div>
             </div>
           </div>
         </div>
@@ -126,12 +137,13 @@ import nature5 from '../../assets/wallpapers/nature5.jpg';
 import random1 from '../../assets/wallpapers/random1.jpg';
 import random2 from '../../assets/wallpapers/random2.jpg';
 import random3 from '../../assets/wallpapers/random3.jpg';
-import dog1 from '../../assets/wallpapers/dog1.jpg';
-import dog2 from '../../assets/wallpapers/dog2.jpg';
 import landscape1 from '../../assets/wallpapers/landscape1.jpg';
 import landscape2 from '../../assets/wallpapers/landscape2.jpg';
 import landscape3 from '../../assets/wallpapers/landscape3.jpg';
 import landscape4 from '../../assets/wallpapers/landscape4.jpg';
+import cliff from '../../assets/wallpapers/cliff.mp4';
+import sandhand from '../../assets/wallpapers/sandhand.mp4';
+import seoul from '../../assets/wallpapers/seoul.mp4';
 
 const { background } = storeToRefs(useBackgroundStore())
 
@@ -227,6 +239,14 @@ const backgrounds = ref([
     ]
   },
   {
+    title: "Live wallpapers",
+    images: [
+      cliff,
+      sandhand,
+      seoul,
+    ],
+  },
+  {
     title: "Nature",
     images: [
       nature1,
@@ -245,13 +265,6 @@ const backgrounds = ref([
     ]
   },
   {
-    title: "Dogs",
-    images: [
-      dog1,
-      dog2,
-    ]
-  },
-  {
     title: "Landscape",
     images: [
       landscape1,
@@ -265,6 +278,15 @@ const backgrounds = ref([
 const setBackground = (image) => {
   if (image !== background.value) {
     background.value = image
+  }
+}
+
+const isFIleAVideo = (file) => {
+  if (file?.split('.')?.[1] === 'mp4') {
+    return true
+  }
+  else {
+    return false
   }
 }
 </script>

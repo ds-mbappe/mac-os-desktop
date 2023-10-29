@@ -1,7 +1,7 @@
 <template>
   <div class="relative flex items-center  
         justify-center h-screen overflow-hidden">
-    <div v-if="type === 'image'" class="absolute z-0 w-auto  
+    <div v-if="!isFIleAVideo(background)" class="absolute z-0 w-auto  
             min-w-full min-h-full max-w-none bg-contain bg-center" :style="{
               'background-image': background ? `url('${background}')` : '',
               'background-size': 'cover'
@@ -18,7 +18,16 @@
 import { storeToRefs } from 'pinia'
 import { useBackgroundStore } from '@/stores/background.store.js'
 
-const { background, type } = storeToRefs(useBackgroundStore())
+const { background } = storeToRefs(useBackgroundStore())
+
+const isFIleAVideo = (file) => {
+  if (file?.split('.')?.[1] === 'mp4') {
+    return true
+  }
+  else {
+    return false
+  }
+}
 </script>
 
 <style scoped></style>
