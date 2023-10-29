@@ -39,19 +39,23 @@ import { useGeneralStore } from '../stores/general.store';
 
 const { folders } = storeToRefs(useGeneralStore())
 
+const selectedFolder = ref(null)
 const windowWidth = ref(0)
 const windowHeight = ref(0)
 
+document.onclick = hideMenu;
+document.oncontextmenu = rightClick;
+
 window.addEventListener("click", (e) => {
-  // if (!e.target.id.includes("#folder")) {
-  //   folders.value.forEach(folder => {
-  //     folder.selected = false
-  //   })
-  // }
+  if (e.target?.id === 'container') {
+    for (let element of folders.value) {
+      element.selected = false
+    }
+    selectedFolder.value = null
+  }
 })
 
 window.addEventListener("dblclick", (e) => {
-  // console.log(e)
 })
 
 window.addEventListener("DOMContentLoaded", (e) => {
@@ -60,8 +64,13 @@ window.addEventListener("DOMContentLoaded", (e) => {
   makeDraggable(document.querySelector(`#folder_1`));
 })
 
-document.onclick = hideMenu;
-document.oncontextmenu = rightClick;
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Backspace" || e.key === "Delete") {
+    if (selectedFolder?.value) {
+      deleteFolder(selectedFolder?.value?.id)
+    }
+  }
+})
 
 function hideMenu() {
   document.getElementById("contextMenu")
@@ -132,10 +141,14 @@ function makeDraggable(element) {
 }
 
 const setSelectedFolder = (id) => {
-  const found = folders.value?.find(el => el?.id == id);
+  const found = folders.value?.find(el => el?.id === id);
 
   if (found) {
+    for (let element of folders.value) {
+      element.selected = false
+    }
     found.selected = !found.selected;
+    selectedFolder.value = found
   }
 }
 
@@ -149,15 +162,13 @@ const addNewFolder = async () => {
   var folder = document.getElementById(`folder_${folders.value?.length}`)
   folder.style.top = Math.random() * (windowHeight.value - 0) + 0 + 'px'
   folder.style.left = Math.random() * (windowWidth.value - 0) + 0 + 'px'
+
+  makeDraggable(document.querySelector(`#folder_${folders.value?.length}`));
 }
 
-// watch(folders.value, (newValue, oldValue) => {
-//   if (newValue) {
-//     folders.value.forEach(folder => {
-//       makeDraggable(document.querySelector(`#folder_${folder?.id}`));
-//     })
-//   }
-// })
+const deleteFolder = (id) => {
+  folders.value?.splice?.(folders?.value?.findIndex(el => el.id == id), 1)
+}
 </script>
 
 <style scoped>
