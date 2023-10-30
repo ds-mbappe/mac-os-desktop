@@ -138,13 +138,10 @@ import nature5 from '../../assets/wallpapers/nature5.jpg';
 import random1 from '../../assets/wallpapers/random1.jpg';
 import random2 from '../../assets/wallpapers/random2.jpg';
 import random3 from '../../assets/wallpapers/random3.jpg';
-import landscape1 from '../../assets/wallpapers/landscape1.jpg';
-import landscape2 from '../../assets/wallpapers/landscape2.jpg';
-import landscape3 from '../../assets/wallpapers/landscape3.jpg';
-import landscape4 from '../../assets/wallpapers/landscape4.jpg';
-import cliff from '../../assets/wallpapers/cliff.mp4';
 import sandhand from '../../assets/wallpapers/sandhand.mp4';
 import seoul from '../../assets/wallpapers/seoul.mp4';
+import aurora from '../../assets/wallpapers/aurora.mp4';
+import mall from '../../assets/wallpapers/mall.mp4';
 
 const { background } = storeToRefs(useGeneralStore())
 
@@ -242,7 +239,8 @@ const backgrounds = ref([
   {
     title: "Live wallpapers",
     images: [
-      cliff,
+      mall,
+      aurora,
       sandhand,
       seoul,
     ],
@@ -263,15 +261,6 @@ const backgrounds = ref([
       random1,
       random2,
       random3,
-    ]
-  },
-  {
-    title: "Landscape",
-    images: [
-      landscape1,
-      landscape2,
-      landscape3,
-      landscape4,
     ]
   },
 ])
