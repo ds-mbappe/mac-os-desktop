@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-[30px] flex justify-between z-[999] overflow-hidden pl-4 bg-black/20 select-none">
+  <div class="w-full h-[30px] flex justify-between z-[100] overflow-hidden pl-4 bg-black/40 select-none">
     <div class="h-full flex items-center">
       <!-- Apple Logo -->
       <div class="mr-3">
@@ -7,14 +7,14 @@
       </div>
 
       <!-- Active App -->
-      <dsm-text base bold class="capitalize cursor-default text-white px-3 h-full flex items-center hover:bg-black/10">
-        {{ route?.name === 'home' ? 'Finder' : route?.name }}
+      <dsm-text base bold class="capitalize cursor-default text-white px-3 h-full flex items-center hover:bg-black/20">
+        {{ route?.name ? route?.name : 'Finder' }}
       </dsm-text>
 
       <!-- Active App options -->
       <div class="h-full flex items-center">
         <dsm-text v-for="item in menuItems" :key="item" sm medium
-          class="capitalize cursor-default text-white px-3 h-full flex items-center hover:bg-black/10">
+          class="capitalize cursor-default text-white px-3 h-full flex items-center hover:bg-black/20">
           {{ item }}
         </dsm-text>
       </div>
@@ -22,17 +22,17 @@
 
     <div class="h-full flex items-center">
       <!-- Battery Percentage -->
-      <div class="hover:bg-black/10 px-3 py-1.5">
+      <div class="hover:bg-black/20 px-3 py-1.5">
         <Icon icon="heroicons:battery-50-solid" height="29" width="29" class="text-white" />
       </div>
 
       <!-- Siri -->
-      <div class="hover:bg-black/10 px-3 py-1.5">
+      <div class="hover:bg-black/20 px-3 py-1.5">
         <img :src="siri" width="18" alt="Artificial Intelligence" />
       </div>
 
       <!-- Dark Mode -->
-      <div @click="toggleTheme" class="hover:bg-black/10 px-3 py-1.5 cursor-pointer">
+      <div @click="toggleTheme" class="hover:bg-black/20 px-3 py-1.5 cursor-pointer">
         <Icon icon="gg:dark-mode" height="20" width="20" class="text-white" />
       </div>
 

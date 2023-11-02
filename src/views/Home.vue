@@ -3,6 +3,9 @@
     <!-- Navbar -->
     <top-bar />
 
+    <!-- Login -->
+    <login />
+
     <!-- Content -->
     <div id="container" class="w-full h-full flex-col block relative">
       <div v-for="folder in folders" :key="folder?.id" :id="`folder_${folder?.id}`"
@@ -28,7 +31,8 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
+import Login from '@/views/Login.vue';
 import { Icon } from '@iconify/vue';
 import TopBar from '../components/TopBar.vue';
 import BottomBar from '../components/BottomBar.vue';
@@ -37,7 +41,7 @@ import DsmText from '../components/DsmText.vue';
 import { storeToRefs } from 'pinia';
 import { useGeneralStore } from '../stores/general.store';
 
-const { folders } = storeToRefs(useGeneralStore())
+const { folders, deletedFolders } = storeToRefs(useGeneralStore())
 
 const selectedFolder = ref(null)
 const windowWidth = ref(0)
@@ -60,14 +64,18 @@ window.addEventListener("dblclick", (e) => {
 
 window.addEventListener("DOMContentLoaded", (e) => {
   windowWidth.value = document.getElementById('container').offsetWidth
-  windowHeight.value = document.getElementById('container').offsetHeight
-  makeDraggable(document.querySelector(`#folder_1`));
+  windowHeight.value = document.getElementById('container').offsetHeight - 100
+  if (document.querySelector(`#folder_1`)) {
+    makeDraggable(document.querySelector(`#folder_1`));
+  }
 })
 
 window.addEventListener("keydown", (e) => {
   if (e.key === "Backspace" || e.key === "Delete") {
     if (selectedFolder?.value) {
-      deleteFolder(selectedFolder?.value?.id)
+      deleteFolder(selectedFolder?.value)
+      selectedFolder.value.selected = false
+      deletedFolders?.value?.push(selectedFolder.value)
     }
   }
 })
@@ -117,7 +125,7 @@ function makeDraggable(element) {
     var WinH = document.documentElement.clientHeight || document.body.clientHeight
     // Calculate the max ditance the dialog can Go in each axis
     var maxX = WinX - element.offsetWidth - 1
-    var maxY = WinH - element.offsetHeight - 98
+    var maxY = WinH - element.offsetHeight - 150
     // Calculate the new cursor position by using the previous x and y positions of the mouse
     currentPosX = previousPosX - e.clientX;
     currentPosY = previousPosY - e.clientY;
@@ -152,18 +160,22 @@ const setSelectedFolder = (id) => {
   }
 }
 
-const addNewFolder = async () => {
-  await folders.value.push({
-    id: folders.value?.length + 1,
+const addNewFolder = () => {
+  const randomId = Math.floor(Math.random() * 10000)
+
+  folders.value.push({
+    id: randomId,
     title: 'New Folder',
     selected: false,
   })
 
-  var folder = document.getElementById(`folder_${folders.value?.length}`)
-  folder.style.top = Math.random() * (windowHeight.value - 0) + 0 + 'px'
-  folder.style.left = Math.random() * (windowWidth.value - 0) + 0 + 'px'
-
-  makeDraggable(document.querySelector(`#folder_${folders.value?.length}`));
+  setTimeout(() => {    
+    var folder = document.getElementById(`folder_${randomId}`)
+    folder.style.left = Math.random() * (windowWidth.value - 150) + 'px'
+    folder.style.top = Math.random() * (windowHeight.value - 150) + 'px'
+  
+    makeDraggable(document.querySelector(`#folder_${randomId}`));
+  }, 50);
 }
 
 const deleteFolder = (id) => {
