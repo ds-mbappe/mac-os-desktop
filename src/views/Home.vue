@@ -8,9 +8,28 @@
 
     <!-- Content -->
     <div id="container" class="w-full h-full flex-col block relative">
+      <!-- My CV in PDF Format -->
+      <div
+        id="folder_cv"
+        class="w-fit absolute select-none flex flex-col
+          items-center justify-center rounded-[8px] top-10 left-10"
+        :class="cvSelected ? 'bg-blue-800' : 'bg-transparent'"
+        @click="selectCv"
+      >
+        <div>
+          <Icon icon="vscode-icons:file-type-pdf2" height="100" width="100" />
+        </div>
+
+        <dsm-text xs medium color="white" class="pb-1.5">
+          {{ 'CV MBAPPE' }}
+        </dsm-text>
+      </div>
+
+      <!-- Other folders -->
       <div v-for="folder in folders" :key="folder?.id" :id="`folder_${folder?.id}`"
         class="w-fit absolute select-none flex flex-col items-center justify-center rounded-[8px]"
-        :class="folder?.selected ? 'bg-blue-800' : 'bg-transparent'" @click="setSelectedFolder(folder?.id)">
+        :class="folder?.selected ? 'bg-blue-800' : 'bg-transparent'" @click="setSelectedFolder(folder?.id)"
+      >
         <div>
           <Icon icon="ic:baseline-folder" height="100" width="100" class="text-blue-400" />
         </div>
@@ -19,6 +38,9 @@
           {{ folder?.title }}
         </dsm-text>
       </div>
+
+      <!-- PDF View -->
+      <dialog-pdf />
     </div>
 
     <!-- Bottom bar -->
@@ -37,15 +59,17 @@ import { Icon } from '@iconify/vue';
 import TopBar from '../components/TopBar.vue';
 import BottomBar from '../components/BottomBar.vue';
 import RightClickMenu from '../components/RightClickMenu.vue';
+import DialogPdf from '../components/dialogs/DialogPdf.vue';
 import DsmText from '../components/DsmText.vue';
 import { storeToRefs } from 'pinia';
 import { useGeneralStore } from '../stores/general.store';
 
 const { folders, deletedFolders } = storeToRefs(useGeneralStore())
 
-const selectedFolder = ref(null)
 const windowWidth = ref(0)
 const windowHeight = ref(0)
+const cvSelected = ref(false)
+const selectedFolder = ref(null)
 
 document.onclick = hideMenu;
 document.oncontextmenu = rightClick;
@@ -56,17 +80,25 @@ window.addEventListener("click", (e) => {
       element.selected = false
     }
     selectedFolder.value = null
+    cvSelected.value = false
   }
 })
 
 window.addEventListener("dblclick", (e) => {
+  if (document.querySelector('#dialogPdf')) {
+    document.getElementById("dialogPdf").classList.remove('hidden')
+    document.getElementById("dialogPdf").classList.add('flex')
+  }
 })
 
 window.addEventListener("DOMContentLoaded", (e) => {
   windowWidth.value = document.getElementById('container').offsetWidth
   windowHeight.value = document.getElementById('container').offsetHeight - 100
-  if (document.querySelector(`#folder_1`)) {
-    makeDraggable(document.querySelector(`#folder_1`));
+  if (document.querySelector(`#folder_cv`)) {
+    makeDraggable(document.querySelector(`#folder_cv`));
+  }
+  if (document.querySelector('#dialogPdf')) {
+    makeDraggable(document.querySelector('#dialogPdf'));
   }
 })
 
@@ -134,9 +166,11 @@ function makeDraggable(element) {
     previousPosY = e.clientY;
     // Set the element's new position
     if (element.offsetTop - currentPosY <= maxY && element.offsetTop - currentPosY >= 0) {
+      // element.setAttribute('style', `top: ${element.offsetTop - currentPosY}px !important`);
       element.style.top = (element.offsetTop - currentPosY) + 'px';
     }
     if (element.offsetLeft - currentPosX <= maxX && element.offsetLeft - currentPosX >= 0) {
+      // element.setAttribute('style', `left: ${element.offsetLeft - currentPosX}px !important`);
       element.style.left = (element.offsetLeft - currentPosX) + 'px';
     }
   }
@@ -152,6 +186,7 @@ const setSelectedFolder = (id) => {
   const found = folders.value?.find(el => el?.id === id);
 
   if (found) {
+    cvSelected.value = false
     for (let element of folders.value) {
       element.selected = false
     }
@@ -160,20 +195,32 @@ const setSelectedFolder = (id) => {
   }
 }
 
+const selectCv = () => {
+  for (let element of folders.value) {
+    element.selected = false
+  }
+  cvSelected.value = true
+}
+
 const addNewFolder = () => {
   const randomId = Math.floor(Math.random() * 10000)
+
+  let x = Math.random() * (windowWidth.value - 150)
+  let y = Math.random() * (windowHeight.value - 150)
 
   folders.value.push({
     id: randomId,
     title: 'New Folder',
     selected: false,
+    x: x,
+    y: y,
   })
 
   setTimeout(() => {    
     var folder = document.getElementById(`folder_${randomId}`)
     folder.style.left = Math.random() * (windowWidth.value - 150) + 'px'
     folder.style.top = Math.random() * (windowHeight.value - 150) + 'px'
-  
+
     makeDraggable(document.querySelector(`#folder_${randomId}`));
   }, 50);
 }

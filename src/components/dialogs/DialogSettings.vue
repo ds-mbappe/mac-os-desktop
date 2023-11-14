@@ -107,16 +107,6 @@
       </div>
     </div>
   </div>
-  <!-- <div id="customDialog" class="absolute w-full h-full items-center justify-center hidden select-none">
-  </div> -->
-  <!-- <v-dialog v-model="dialog" width="auto" height="auto" content-class="rounded overflow-hidden select-none" :scrim="false"
-    transition="scale-transition" persistent>
-    <template #activator="{ props }">
-      <div v-bind="props">
-        <slot name="activator" />
-      </div>
-    </template>
-  </v-dialog> -->
 </template>
 
 <script setup>
@@ -147,7 +137,6 @@ const { background } = storeToRefs(useGeneralStore())
 
 const theme = useTheme().name
 
-const dialog = ref(true)
 const items = ref([
   {
     elements: [
