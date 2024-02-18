@@ -1,5 +1,5 @@
 <template>
-  <div id="dialogPdf" class="absolute w-fit max-w-[800px] h-fit max-h-[650px] !rounded-xl hidden flex-col p-3 z-50 select-none overflow-hidden border border-red-400">
+  <div id="dialogPdf" class="absolute w-fit max-w-[800px] h-fit max-h-[650px] !rounded-xl hidden flex-col p-0 z-50 select-none overflow-hidden border border-red-400">
     <div class="w-full h-[100px] bg-black">
 
     </div>

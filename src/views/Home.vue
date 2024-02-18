@@ -16,28 +16,24 @@
         :class="cvSelected ? 'bg-blue-800' : 'bg-transparent'"
         @click="selectCv"
       >
-        <div>
-          <Icon icon="vscode-icons:file-type-pdf2" height="100" width="100" />
+        <div id="folder_cv">
+          <Icon id="folder_cv" icon="vscode-icons:file-type-pdf2" height="100" width="100" />
         </div>
 
-        <dsm-text xs medium color="white" class="pb-1.5">
+        <dsm-text id="folder_cv" xs medium color="white" class="pb-1.5">
           {{ 'CV MBAPPE' }}
         </dsm-text>
       </div>
 
       <!-- Other folders -->
-      <div v-for="folder in folders" :key="folder?.id" :id="`folder_${folder?.id}`"
-        class="w-fit absolute select-none flex flex-col items-center justify-center rounded-[8px]"
-        :class="folder?.selected ? 'bg-blue-800' : 'bg-transparent'" @click="setSelectedFolder(folder?.id)"
-      >
-        <div>
-          <Icon icon="ic:baseline-folder" height="100" width="100" class="text-blue-400" />
-        </div>
-
-        <dsm-text xs medium color="white" class="-mt-2 pb-1.5">
-          {{ folder?.title }}
-        </dsm-text>
-      </div>
+      <folder
+        v-for="folder in folders"
+        :key="folder?.id"
+        :folder="folder"
+        @set-select-folder="setSelectedFolder(folder?.id)"
+        @set-rename-folder="setRenameFolder($event, folder?.id)"
+        @rename-folder="renameFolder($event, folder?.id)"
+      />
 
       <!-- PDF View -->
       <dialog-pdf />
@@ -54,7 +50,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import Login from '@/views/Login.vue';
+import Login from '../views/Login.vue';
 import { Icon } from '@iconify/vue';
 import TopBar from '../components/TopBar.vue';
 import BottomBar from '../components/BottomBar.vue';
@@ -63,6 +59,7 @@ import DialogPdf from '../components/dialogs/DialogPdf.vue';
 import DsmText from '../components/DsmText.vue';
 import { storeToRefs } from 'pinia';
 import { useGeneralStore } from '../stores/general.store';
+import Folder from '../components/Folder.vue';
 
 const { folders, deletedFolders } = storeToRefs(useGeneralStore())
 
@@ -70,6 +67,8 @@ const windowWidth = ref(0)
 const windowHeight = ref(0)
 const cvSelected = ref(false)
 const selectedFolder = ref(null)
+const isRenamingFolder = ref(false)
+const initialTitle = ref(null)
 
 document.onclick = hideMenu;
 document.oncontextmenu = rightClick;
@@ -78,18 +77,22 @@ window.addEventListener("click", (e) => {
   if (e.target?.id === 'container') {
     for (let element of folders.value) {
       element.selected = false
+      if (element?.title) {
+        element.isRenaming = false
+      }
     }
+    isRenamingFolder.value = false
     selectedFolder.value = null
     cvSelected.value = false
   }
-})
+});
 
 window.addEventListener("dblclick", (e) => {
-  if (document.querySelector('#dialogPdf')) {
+  if (e?.target?.id === "folder_cv" && document.querySelector('#folder_cv')) {
     document.getElementById("dialogPdf").classList.remove('hidden')
     document.getElementById("dialogPdf").classList.add('flex')
   }
-})
+});
 
 window.addEventListener("DOMContentLoaded", (e) => {
   windowWidth.value = document.getElementById('container').offsetWidth
@@ -104,13 +107,27 @@ window.addEventListener("DOMContentLoaded", (e) => {
 
 window.addEventListener("keydown", (e) => {
   if (e.key === "Backspace" || e.key === "Delete") {
-    if (selectedFolder?.value) {
+    if (selectedFolder?.value && !isRenamingFolder?.value) {
       deleteFolder(selectedFolder?.value)
       selectedFolder.value.selected = false
       deletedFolders?.value?.push(selectedFolder.value)
     }
   }
-})
+});
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    if (selectedFolder?.value && isRenamingFolder?.value) {
+      const found = folders?.value?.find(el => el?.id === selectedFolder?.value?.id);
+
+      if (found) {
+        found.title = initialTitle?.value
+        found.isRenaming = false
+        isRenamingFolder.value = false
+      }
+    }
+  }
+});
 
 function hideMenu() {
   document.getElementById("contextMenu")
@@ -183,15 +200,33 @@ function makeDraggable(element) {
 }
 
 const setSelectedFolder = (id) => {
-  const found = folders.value?.find(el => el?.id === id);
+  const found = folders?.value?.find(el => el?.id === id);
 
   if (found) {
     cvSelected.value = false
-    for (let element of folders.value) {
+    for (let element of folders?.value) {
       element.selected = false
     }
     found.selected = !found.selected;
     selectedFolder.value = found
+  }
+}
+
+const setRenameFolder = (isRenaming, id) => {
+  const found = folders?.value?.find(el => el?.id === id);
+
+  if (found) {
+    isRenamingFolder.value = isRenaming
+    found.isRenaming = isRenaming
+    initialTitle.value = found?.title
+  }
+}
+
+const renameFolder = (value, id) => {
+  const found = folders?.value?.find(el => el?.id === id);
+
+  if (found) {
+    found.title = value
   }
 }
 
@@ -212,6 +247,7 @@ const addNewFolder = () => {
     id: randomId,
     title: 'New Folder',
     selected: false,
+    isRenaming: false,
     x: x,
     y: y,
   })
