@@ -33,7 +33,7 @@ export default createVuetify(
       adapter: VuetifyDateAdapter,
     },
     theme: {
-      defaultTheme: 'customLightTheme',
+      defaultTheme: 'customDarkTheme',
       themes: {
         customLightTheme,
         customDarkTheme,
