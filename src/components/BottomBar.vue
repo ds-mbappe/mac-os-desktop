@@ -4,21 +4,21 @@
       <div v-bind="props" class="flex items-center gap-3 pt-1 pb-2 rounded-[20px] px-2 select-none"
         :class="theme === 'customLightTheme' ? 'bg-white/50' : 'bg-black/50'">
         <!-- Bottom icons -->
-        <div class="flex flex-col items-center justify-center relative" v-for="image in images" :key="image?.id">
+        <div class="flex flex-col items-center justify-center relative pointer-events-none" v-for="image in images" :key="image?.id" @click="image.onClick">
           <v-img :src="image?.logo" :aspect-ratio="1" :width="image?.width" class="mb-1" />
 
           <div v-if="image?.active" class="w-1 h-1 rounded-full bg-black absolute translate-y-[35px]" :class="theme === 'customLightTheme' ? 'bg-black' : 'bg-white'" />
         </div>
 
         <!-- Trash empty -->
-        <div v-if="deletedFolders?.length" class="flex flex-col items-center justify-center relative">
+        <div v-if="deletedFolders?.length" class="flex flex-col items-center justify-center relative pointer-events-none">
           <v-img :src="trashFull" :aspect-ratio="1" :width="58" class="mb-1" />
 
           <div v-if="trashActive" class="w-1 h-1 rounded-full absolute translate-y-[35px]" :class="theme === 'customLightTheme' ? 'bg-black' : 'bg-white'" />
         </div>
 
         <!-- Trash full -->
-        <div v-else class="flex flex-col items-center justify-center relative">
+        <div v-else class="flex flex-col items-center justify-center relative pointer-events-none">
           <v-img :src="trash" :aspect-ratio="1" :width="58" class="mb-1" />
 
           <div v-if="trashActive" class="w-1 h-1 rounded-full absolute translate-y-[35px]" :class="theme === 'customLightTheme' ? 'bg-black' : 'bg-white'" />
@@ -50,7 +50,12 @@ const { deletedFolders } = storeToRefs(useGeneralStore())
 
 const theme = useTheme().name
 
-const trashActive = ref(false)
+const trashActive = ref(false);
+
+const openDialogSafari = () => {
+  console.log('Clicked');
+}
+
 const images = ref([
   {
     id: 'finder',
@@ -63,6 +68,7 @@ const images = ref([
     logo: safari,
     width: 53,
     active: false,
+    onClick: openDialogSafari,
   },
   {
     id: 'store',
@@ -112,5 +118,5 @@ const images = ref([
     width: 63,
     active: false,
   },
-])
+]);
 </script>

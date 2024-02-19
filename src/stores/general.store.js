@@ -20,6 +20,7 @@ let images = [original1, original2, original3, nature1, nature2, nature3, nature
 export const useGeneralStore = defineStore('general', {
   state: () => ({
     background: images?.[Math.floor(Math.random() * 15)],
+    apps: [],
     folders: [],
     deletedFolders: [],
   }),
