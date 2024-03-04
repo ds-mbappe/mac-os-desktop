@@ -6,7 +6,7 @@
               'background-size': 'cover'
             }">
       <div class="flex flex-col -translate-y-[100%]">
-        <p class="text-white text-[30px] font-medium">
+        <p class="text-white text-[30px] font-medium text-center">
           {{ moment().format("dddd, MMM D") }}
         </p>
         <p class="text-white/80 font-medium text-[100px] -translate-y-5">

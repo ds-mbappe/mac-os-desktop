@@ -9,34 +9,31 @@
     <!-- Content -->
     <div id="container" class="w-full h-full flex-col block relative">
       <!-- My CV in PDF Format -->
-      <div
-        id="folder_cv"
-        class="w-fit absolute select-none flex flex-col
-          items-center justify-center rounded-[8px] top-10 left-10"
-        :class="cvSelected ? 'bg-blue-800' : 'bg-transparent'"
-        @click="selectCv"
-      >
-        <div id="folder_cv">
-          <Icon id="folder_cv" icon="vscode-icons:file-type-pdf2" height="100" width="100" />
-        </div>
-
-        <dsm-text id="folder_cv" xs medium color="white" class="pb-1.5">
-          {{ 'CV MBAPPE' }}
-        </dsm-text>
-      </div>
+      <file
+        v-for="file in files"
+        :key="file?.id"
+        :id="`file_${file?.id}`"
+        :file="file"
+        @set-select-file="setSelectedFile(file)"
+        @set-rename-file="setRenameFile($event, file?.id)"
+        @rename-file="renameFile($event, file?.id)"
+      />
 
       <!-- Other folders -->
       <folder
         v-for="folder in folders"
         :key="folder?.id"
         :folder="folder"
-        @set-select-folder="setSelectedFolder(folder?.id)"
+        @set-select-folder="setSelectedFolder(folder)"
         @set-rename-folder="setRenameFolder($event, folder?.id)"
         @rename-folder="renameFolder($event, folder?.id)"
       />
 
       <!-- PDF View -->
       <dialog-pdf />
+
+      <!-- Dialog Terminal -->
+      <dialog-terminal />
     </div>
 
     <!-- Bottom bar -->
@@ -49,30 +46,48 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import Login from '../views/Login.vue';
 import { Icon } from '@iconify/vue';
 import TopBar from '../components/TopBar.vue';
 import BottomBar from '../components/BottomBar.vue';
 import RightClickMenu from '../components/RightClickMenu.vue';
 import DialogPdf from '../components/dialogs/DialogPdf.vue';
+import DialogTerminal from '../components/dialogs/DialogTerminal.vue';
 import DsmText from '../components/DsmText.vue';
 import { storeToRefs } from 'pinia';
 import { useGeneralStore } from '../stores/general.store';
 import Folder from '../components/Folder.vue';
+import File from '../components/File.vue';
+import { v4 as uuidv4 } from 'uuid';
 
-const { folders, deletedFolders } = storeToRefs(useGeneralStore())
+const { folders, files, deletedElements, bottomItems, trashActive, terminalItems } = storeToRefs(useGeneralStore());
 
+onMounted(() => {
+  files.value.push(cv.value);
+});
+
+// Refs
 const windowWidth = ref(0)
 const windowHeight = ref(0)
-const cvSelected = ref(false)
 const selectedFolder = ref(null)
+const selectedFile = ref(null)
 const isRenamingFolder = ref(false)
+const isRenamingFile = ref(false)
+const cv = ref({
+  id: 'cv',
+  logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/267px-PDF_file_icon.svg.png",
+  title: 'CV MBAPPE',
+  type: 'file',
+  selected: false,
+  isRenaming: false,
+})
 const initialTitle = ref(null)
 
 document.onclick = hideMenu;
 document.oncontextmenu = rightClick;
 
+// Various actions related to the click
 window.addEventListener("click", (e) => {
   if (e.target?.id === 'container') {
     for (let element of folders.value) {
@@ -81,40 +96,87 @@ window.addEventListener("click", (e) => {
         element.isRenaming = false
       }
     }
+    for (let element of files.value) {
+      element.selected = false
+      if (element?.title) {
+        element.isRenaming = false
+      }
+    }
     isRenamingFolder.value = false
     selectedFolder.value = null
-    cvSelected.value = false
+    selectedFile.value = null
+  }
+  if (e.target?.id === "dialog_container") {
+    document.getElementById('textFieldTerminal').focus()
+  }
+
+  if (bottomItems?.value?.map(item => item?.id)?.includes(e?.target?.id)) {
+    let found = bottomItems?.value?.find(item => item?.id === e?.target?.id)
+  
+    if (found) {
+      for (let element of bottomItems?.value) {
+        element.active = false
+      }
+      found.active = true
+      trashActive.value = false
+
+      initTerminal(found);
+    }
+  }
+  if (e?.target?.id === "trash") {
+    for (let element of bottomItems?.value) {
+      element.active = false
+    }
+    trashActive.value = true
   }
 });
 
+// Open Folder/file
 window.addEventListener("dblclick", (e) => {
-  if (e?.target?.id === "folder_cv" && document.querySelector('#folder_cv')) {
+  if (e?.target?.id === "file_cv" && document.querySelector('#file_cv')) {
     document.getElementById("dialogPdf").classList.remove('hidden')
     document.getElementById("dialogPdf").classList.add('flex')
   }
 });
 
+// Make some things draggable
 window.addEventListener("DOMContentLoaded", (e) => {
   windowWidth.value = document.getElementById('container').offsetWidth
   windowHeight.value = document.getElementById('container').offsetHeight - 100
-  if (document.querySelector(`#folder_cv`)) {
-    makeDraggable(document.querySelector(`#folder_cv`));
+  if (document.querySelector(`#file_cv`)) {
+    makeDraggable(document.querySelector(`#file_cv`));
   }
   if (document.querySelector('#dialogPdf')) {
     makeDraggable(document.querySelector('#dialogPdf'));
   }
-})
+  if (document.querySelector('#dialog_terminal')) {
+    makeDraggable(document.querySelector('#dialog_terminal'));
+  }
+});
 
+// Copy a folder/file
+window.addEventListener("keydown", (e) => {
+  if (e.ctrlKey && e.key === "c") {
+    alert('CTRL + C');
+  }
+});
+
+// Delete a folder/file
 window.addEventListener("keydown", (e) => {
   if (e.key === "Backspace" || e.key === "Delete") {
     if (selectedFolder?.value && !isRenamingFolder?.value) {
-      deleteFolder(selectedFolder?.value)
+      deleteElement(selectedFolder?.value)
       selectedFolder.value.selected = false
-      deletedFolders?.value?.push(selectedFolder.value)
+      deletedElements?.value?.push(selectedFolder.value)
+    } else if (selectedFile?.value && !isRenamingFile?.value) {
+      deleteElement(selectedFile?.value)
+      selectedFile.value.selected = false
+      deletedElements?.value?.push(selectedFile?.value)
     }
   }
 });
 
+// Unselect a folder/file with "Esc key"
 window.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     if (selectedFolder?.value && isRenamingFolder?.value) {
@@ -125,15 +187,35 @@ window.addEventListener("keydown", (e) => {
         found.isRenaming = false
         isRenamingFolder.value = false
       }
+    } else if (selectedFile?.value && isRenamingFile?.value) {
+      const found = files?.value?.find(el => el?.id === selectedFile?.value?.id);
+
+      if (found) {
+        found.title = initialTitle?.value
+        found.isRenaming = false
+        isRenamingFile.value = false
+      }
+    } else {
+      for (let element of folders?.value) {
+        element.selected = false
+      }
+      for (let element of files?.value) {
+        element.selected = false
+      }
+
+      selectedFolder.value = null
+      selectedFile.value = null
     }
   }
 });
 
+// Hide context menu
 function hideMenu() {
   document.getElementById("contextMenu")
     .style.display = "none"
 }
 
+// Display context menu
 function rightClick(e) {
   e.preventDefault();
 
@@ -147,6 +229,7 @@ function rightClick(e) {
   }
 }
 
+// Make an element draggable
 function makeDraggable(element) {
   // Make an element draggable (or if it has a .window-top class, drag based on the .window-top element)
   let currentPosX = 0, currentPosY = 0, previousPosX = 0, previousPosY = 0;
@@ -199,16 +282,35 @@ function makeDraggable(element) {
   }
 }
 
-const setSelectedFolder = (id) => {
-  const found = folders?.value?.find(el => el?.id === id);
+const setSelectedFolder = (folder) => {
+  const found = folders?.value?.find(el => el?.id === folder?.id);
 
   if (found) {
-    cvSelected.value = false
+    selectedFile.value = null
     for (let element of folders?.value) {
+      element.selected = false
+    }
+    for (let element of files?.value) {
       element.selected = false
     }
     found.selected = !found.selected;
     selectedFolder.value = found
+  }
+}
+
+const setSelectedFile = (file) => {
+  const found = files?.value?.find(el => el?.id === file?.id);
+
+  if (found) {
+    selectedFolder.value = null;
+    for (let element of files?.value) {
+      element.selected = false
+    }
+    for (let element of folders?.value) {
+      element.selected = false
+    }
+    found.selected = !found.selected;
+    selectedFile.value = found
   }
 }
 
@@ -222,6 +324,16 @@ const setRenameFolder = (isRenaming, id) => {
   }
 }
 
+const setRenameFile = (isRenaming, id) => {
+  const found = files?.value?.find(el => el?.id === id);
+
+  if (found) {
+    isRenamingFile.value = isRenaming
+    found.isRenaming = isRenaming
+    initialTitle.value = found?.title
+  }
+}
+
 const renameFolder = (value, id) => {
   const found = folders?.value?.find(el => el?.id === id);
 
@@ -230,11 +342,12 @@ const renameFolder = (value, id) => {
   }
 }
 
-const selectCv = () => {
-  for (let element of folders.value) {
-    element.selected = false
+const renameFile = (value, id) => {
+  const found = files?.value?.find(el => el?.id === id);
+
+  if (found) {
+    found.title = value
   }
-  cvSelected.value = true
 }
 
 const addNewFolder = () => {
@@ -250,6 +363,7 @@ const addNewFolder = () => {
     isRenaming: false,
     x: x,
     y: y,
+    type: 'folder',
   })
 
   setTimeout(() => {    
@@ -261,8 +375,31 @@ const addNewFolder = () => {
   }, 50);
 }
 
-const deleteFolder = (id) => {
-  folders.value?.splice?.(folders?.value?.findIndex(el => el.id == id), 1)
+const deleteElement = (element) => {
+  if (element?.type === 'folder') {
+    folders.value?.splice?.(folders?.value?.findIndex(el => el.id == element?.id), 1)
+  } else if (element?.type === 'file') {
+    files.value?.splice?.(files?.value?.findIndex(el => el.id == element?.id), 1)
+  }
+}
+
+const initTerminal = (element) => {
+  if (element?.id === 'terminal') {
+    let app = document.getElementById(element?.id);
+    let terminal = document.getElementById('dialog_terminal');
+  
+    if (app && terminal) {
+      terminal.classList.remove('hidden');
+      terminal.classList.add('flex');
+  
+      if (!terminalItems?.value?.length) {
+        terminalItems.value.push({
+          id: uuidv4(),
+          text: '',
+        });
+      }
+    }
+  }
 }
 </script>
 
