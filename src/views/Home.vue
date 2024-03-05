@@ -43,6 +43,8 @@
   </div>
 
   <right-click-menu @add-new-folder="addNewFolder" />
+
+  <dialog-settings />
 </template>
 
 <script setup>
@@ -60,6 +62,7 @@ import { useGeneralStore } from '../stores/general.store';
 import Folder from '../components/Folder.vue';
 import File from '../components/File.vue';
 import { v4 as uuidv4 } from 'uuid';
+import DialogSettings from '../components/dialogs/DialogSettings.vue';
 
 const { folders, files, deletedElements, bottomItems, trashActive, terminalItems } = storeToRefs(useGeneralStore());
 
@@ -86,6 +89,9 @@ const initialTitle = ref(null)
 
 document.onclick = hideMenu;
 document.oncontextmenu = rightClick;
+
+// Prevent default context menu (when the user makes a right click)
+window.addEventListener("contextmenu", (e) => e.preventDefault());
 
 // Various actions related to the click
 window.addEventListener("click", (e) => {
@@ -211,18 +217,16 @@ window.addEventListener("keydown", (e) => {
 
 // Hide context menu
 function hideMenu() {
-  document.getElementById("contextMenu")
+  document.getElementById("contextMenuRightClickContainer")
     .style.display = "none"
 }
 
 // Display context menu
 function rightClick(e) {
-  e.preventDefault();
-
-  if (document.getElementById("contextMenu").style.display == "block") {
+  if (document.getElementById("contextMenuRightClickContainer").style.display == "block") {
     hideMenu();
   } else {
-    var menu = document.getElementById("contextMenu")
+    var menu = document.getElementById("contextMenuRightClickContainer")
     menu.style.display = 'block';
     menu.style.left = e.pageX + "px";
     menu.style.top = e.pageY + "px";
@@ -384,8 +388,9 @@ const deleteElement = (element) => {
 }
 
 const initTerminal = (element) => {
+  let app = document.getElementById(element?.id);
+  // Show Terminal App
   if (element?.id === 'terminal') {
-    let app = document.getElementById(element?.id);
     let terminal = document.getElementById('dialog_terminal');
   
     if (app && terminal) {
@@ -399,6 +404,13 @@ const initTerminal = (element) => {
         });
       }
     }
+  }
+  // Show Settings App
+  if (app?.id === 'settings') {
+    document.getElementById("customDialog").classList.remove('hidden')
+    document.getElementById("customDialog").classList.add('flex')
+
+    makeDraggable(document.querySelector('#customDialog'));
   }
 }
 </script>

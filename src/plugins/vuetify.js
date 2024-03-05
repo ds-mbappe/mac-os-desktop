@@ -14,6 +14,8 @@ const customLightTheme = {
     textWhite: '#FFFFFF',
     textBlack: '#000000',
     contextBlue: '#367ed0',
+    tooltipBackground: '#000000',
+    tooltipText: 'FFFFFF',
   },
 }
 
@@ -23,6 +25,8 @@ const customDarkTheme = {
     textWhite: '#000000',
     textBlack: '#FFFFFF',
     contextBlue: '#2070CB',
+    tooltipBackground: '#000000',
+    tooltipText: 'FFFFFF',
   },
 }
 

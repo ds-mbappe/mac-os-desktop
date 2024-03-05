@@ -1,7 +1,7 @@
 <template>
   <div
     id="dialog_terminal"
-    class="absolute w-[600px] h-[500px] !rounded-[8px] hidden z-50 flex-col select-none overflow-hidden shadow-md shadow-white/20"
+    class="absolute w-[600px] h-[500px] !rounded-[8px] hidden flex-col select-none overflow-hidden shadow-md shadow-white/20"
     :class="activeTheme === 'customLightTheme' ? 'bg-[#FCF8F9]' : 'bg-black'"
   >
     <div
@@ -45,13 +45,13 @@
         >
           {{ 'ds-mbappe@my-portfolio' }}
 
-          <span :class="activeTheme === 'customLightTheme' ? 'text-black' : 'text-[#4B4C52]'">:</span>
+          <span :class="activeTheme === 'customLightTheme' ? 'text-black' : 'text-white'">:</span>
           <span class="text-blue-500">{{ terminalTitle }}</span>
-          <span :class="activeTheme === 'customLightTheme' ? 'text-black' : 'text-[#4B4C52]'">$</span>
+          <span :class="activeTheme === 'customLightTheme' ? 'text-black' : 'text-white'">$</span>
 
           <span
             class="text-base font-semibold"
-            :class="activeTheme === 'customLightTheme' ? 'text-black' : 'text-[#4B4C52]'"
+            :class="activeTheme === 'customLightTheme' ? 'text-black' : 'text-white'"
           >
             {{ item?.text }}
           </span>
@@ -62,6 +62,7 @@
         id="textFieldTerminal"
         v-model="text"
         autofocus
+        autocomplete="off"
         hide-details
         type="text"
         variant="plain"

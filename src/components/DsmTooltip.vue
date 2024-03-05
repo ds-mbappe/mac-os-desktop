@@ -2,7 +2,7 @@
   <v-tooltip
     :location="location"
     :origin="origin"
-    :content-class="[activeTheme === 'customDarkTheme' ? '!bg-black/50' : '!bg-white/50', '!w-fit !max-w-[250px] !p-2 !rounded-lg']"
+    :content-class="['!bg-tooltip-background !text-tooltip-text !w-fit !max-w-[250px] !p-2 !rounded-lg']"
     attach
   >
     <template #activator="{ props }">
