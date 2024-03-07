@@ -101,7 +101,6 @@ export const useGeneralStore = defineStore('general', {
     terminalItems: [],
     bottomItems: bottomItems,
     trashActive: false,
-    activeTheme: 'customDarkTheme',
   }),
   actions: {
     changeBackground(url) {

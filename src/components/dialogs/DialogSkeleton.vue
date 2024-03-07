@@ -1,9 +1,11 @@
 <template>
   <v-dialog
     v-model="dialog"
-    width="auto"
+    :width="width"
+    :height="height"
+    :no-click-animation="true"
     content-class="!rounded"
-    :persistent="persistent"
+    :persistent="true"
   >
     <template #activator="{ props }">
       <slot name="activator-div">
@@ -186,6 +188,14 @@ const props = defineProps({
   icon: {
     type: String,
     default: ''
+  },
+  width: {
+    type: String,
+    default: 'auto'
+  },
+  height: {
+    type: String,
+    default: 'auto'
   },
   displayClose: {
     type: Boolean,

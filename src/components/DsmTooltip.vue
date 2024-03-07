@@ -28,11 +28,6 @@
 </template>
 
 <script setup>
-import { storeToRefs } from 'pinia';
-import { useGeneralStore } from '../stores/general.store';
-
-const { activeTheme } = storeToRefs(useGeneralStore())
-
 const props = defineProps({
   id: { type: String, default: null },
   location: { type: String, default: "top center" },

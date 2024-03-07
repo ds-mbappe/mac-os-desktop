@@ -33,7 +33,13 @@
       <dialog-pdf />
 
       <!-- Dialog Terminal -->
-      <dialog-terminal />
+      <dialog-terminal ref="dialogTerminal" />
+
+      <!-- Dialog Safari -->
+      <dialog-safari ref="dialogSafari" />
+
+      <!-- Settings Dialog -->
+      <dialog-settings ref="dialogSettings" />
     </div>
 
     <!-- Bottom bar -->
@@ -43,8 +49,6 @@
   </div>
 
   <right-click-menu @add-new-folder="addNewFolder" />
-
-  <dialog-settings />
 </template>
 
 <script setup>
@@ -55,13 +59,14 @@ import TopBar from '../components/TopBar.vue';
 import BottomBar from '../components/BottomBar.vue';
 import RightClickMenu from '../components/RightClickMenu.vue';
 import DialogPdf from '../components/dialogs/DialogPdf.vue';
-import DialogTerminal from '../components/dialogs/DialogTerminal.vue';
 import DsmText from '../components/DsmText.vue';
 import { storeToRefs } from 'pinia';
 import { useGeneralStore } from '../stores/general.store';
 import Folder from '../components/Folder.vue';
 import File from '../components/File.vue';
 import { v4 as uuidv4 } from 'uuid';
+import DialogTerminal from '../components/dialogs/DialogTerminal.vue';
+import DialogSafari from '../components/dialogs/DialogSafari.vue';
 import DialogSettings from '../components/dialogs/DialogSettings.vue';
 
 const { folders, files, deletedElements, bottomItems, trashActive, terminalItems } = storeToRefs(useGeneralStore());
@@ -86,6 +91,9 @@ const cv = ref({
   isRenaming: false,
 })
 const initialTitle = ref(null)
+const dialogTerminal = ref(null);
+const dialogSafari = ref(null);
+const dialogSettings = ref(null);
 
 document.onclick = hideMenu;
 document.oncontextmenu = rightClick;
@@ -126,7 +134,7 @@ window.addEventListener("click", (e) => {
       found.active = true
       trashActive.value = false
 
-      initTerminal(found);
+      initApps(found);
     }
   }
   if (e?.target?.id === "trash") {
@@ -154,9 +162,6 @@ window.addEventListener("DOMContentLoaded", (e) => {
   }
   if (document.querySelector('#dialogPdf')) {
     makeDraggable(document.querySelector('#dialogPdf'));
-  }
-  if (document.querySelector('#dialog_terminal')) {
-    makeDraggable(document.querySelector('#dialog_terminal'));
   }
 });
 
@@ -223,7 +228,7 @@ function hideMenu() {
 
 // Display context menu
 function rightClick(e) {
-  if (document.getElementById("contextMenuRightClickContainer").style.display == "block") {
+  if (e?.target?.id === "container" && document.getElementById("contextMenuRightClickContainer").style.display == "block") {
     hideMenu();
   } else {
     var menu = document.getElementById("contextMenuRightClickContainer")
@@ -387,30 +392,24 @@ const deleteElement = (element) => {
   }
 }
 
-const initTerminal = (element) => {
-  let app = document.getElementById(element?.id);
-  // Show Terminal App
+const initApps = (element) => {
+  // Terminal App
   if (element?.id === 'terminal') {
-    let terminal = document.getElementById('dialog_terminal');
-  
-    if (app && terminal) {
-      terminal.classList.remove('hidden');
-      terminal.classList.add('flex');
-  
-      if (!terminalItems?.value?.length) {
-        terminalItems.value.push({
-          id: uuidv4(),
-          text: '',
-        });
-      }
+    dialogTerminal.value.dialogTerminal.dialog = true
+    if (!terminalItems?.value?.length) {
+      terminalItems.value.push({
+        id: uuidv4(),
+        text: '',
+      });
     }
   }
-  // Show Settings App
-  if (app?.id === 'settings') {
-    document.getElementById("customDialog").classList.remove('hidden')
-    document.getElementById("customDialog").classList.add('flex')
-
-    makeDraggable(document.querySelector('#customDialog'));
+  // Safari App
+  if (element?.id === 'safari') {
+    dialogSafari.value.dialogSafari.dialog = true
+  }
+  // Settings App
+  if (element?.id === 'settings') {
+    dialogSettings.value.dialogSettings.dialog = true
   }
 }
 </script>

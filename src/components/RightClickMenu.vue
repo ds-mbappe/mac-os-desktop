@@ -1,7 +1,8 @@
 <template>
   <div id="contextMenuRightClickContainer" style="display: none"
-    class="w-[250px] h-fit flex flex-col p-1 rounded-[6px] border border-double border-white/20 select-none absolute cursor-default"
-    :class="theme === 'customLightTheme' ? 'bg-white/90' : 'bg-neutral-600'">
+    class="w-[250px] h-fit flex flex-col p-1 rounded-[6px] border border-double
+      bg-white/90 dark:bg-neutral-600 border-white/20 select-none absolute cursor-default"
+    >
     <div class="flex items-center justify-between rounded hover:bg-context-blue" @click="addNewFolder">
       <dsm-text xs color="text-black hover:text-white" class="w-full h-full pl-2 pr-6 py-1">
         {{ ('Nouveau dossier') }}
@@ -14,8 +15,7 @@
       </dsm-text>
     </div>
 
-    <v-divider class="border-opacity-100 px-2"
-      :class="theme === 'customLightTheme' ? 'border-black/20' : 'border-white/75'" />
+    <v-divider class="border-opacity-100 px-2 border-black/20 dark:border-white/75" />
 
     <div class="flex items-center justify-between rounded hover:bg-context-blue">
       <dsm-text xs color="text-black hover:text-white" class="w-full h-full pl-2 pr-6 py-1">

@@ -24,7 +24,7 @@
     <div v-if="loading" class="absolute w-full h-full flex items-center justify-center overflow-hidden rounded"
       :class="[danger ? dangerLoadingVariantStyle[variant] : loadingVariantStyle[variant]]">
       <slot name="loader">
-        <svn-loader />
+        <dsm-loader />
       </slot>
     </div>
   </div>
@@ -33,7 +33,7 @@
 <script setup>
 import { ref } from "vue";
 import { Icon } from "@iconify/vue";
-import SvnLoader from "../animation/SvnLoader.vue";
+import DsmLoader from "../components/DsmLoader.vue";
 
 const emit = defineEmits(['click'])
 
