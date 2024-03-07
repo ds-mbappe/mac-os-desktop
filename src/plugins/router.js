@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHashHistory, createWebHistory } from "vue-router";
 import Home from "@/views/Home.vue"
 
 const routes = [
@@ -6,6 +6,6 @@ const routes = [
 ]
 
 export default createRouter({
-  history: createWebHistory(),
+  history: import.meta.env.VITE_IS_ELECTRON ? createWebHashHistory() : createWebHistory(),
   routes,
 })
