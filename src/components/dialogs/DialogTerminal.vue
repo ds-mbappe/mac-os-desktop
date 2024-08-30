@@ -1,5 +1,6 @@
 <template>
   <dialog-skeleton
+    id="dialogTerminal"
     ref="dialogTerminal"
     :display-close="false"
     :scrim="false"
